@@ -1,17 +1,26 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import Logo from '../assets/img/logo.svg';
 import Avatar from '../assets/img/agents/agent1.png';
-
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch,useSelector } from 'react-redux'
+import { fetchLogout } from '../redux/AuthReducer';
 const Header = () => {
-  const [isLogin, setIsLogin] = useState(true);
+
+  const isLogin =  useSelector(i => i.auth.isLogin) || JSON.parse(localStorage.getItem('token'));
   const [showMenu, setShowMenu] = useState(false);
+  const dispatch = useDispatch()
+  const location = useNavigate()
+
 
   const handleLogout = () => {
-    // اتخاذ الإجراءات اللازمة عند تسجيل الخروج
-    setIsLogin(false);
-    // إخفاء القائمة بعد تسجيل الخروج
     setShowMenu(false);
+    const token = JSON.parse(localStorage.getItem('token'))
+    console.log(token)
+    if (token) {
+      dispatch(fetchLogout(token))
+      localStorage.removeItem('token')
+      location('/')
+    }
   };
 
   return (

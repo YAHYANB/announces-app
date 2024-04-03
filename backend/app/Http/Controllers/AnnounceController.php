@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Announce;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class AnnounceController extends Controller
 {
@@ -22,7 +23,7 @@ class AnnounceController extends Controller
             'num_bathrooms' => ['required'],
             'space' => ['required'],
             'price' => ['required'],
-            'type' => ['required', 'in:house, apartment, villa'],
+            'type' => ['required', Rule::in(['house', 'apartment', 'villa'])],
             'city' => ['required', 'max:30'],
             'description' => ['required'],
         ]);

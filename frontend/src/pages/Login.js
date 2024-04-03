@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash} from '@fortawesome/free-solid-svg-icons';
 import {faFacebook } from '@fortawesome/free-brands-svg-icons';
 import Image from '../assets/img/houses/login1.jpg'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch,useSelector } from 'react-redux'
+import { fetchLogin } from '../redux/AuthReducer';
 
 //  bax tbdl f icon 2la 7sab ila  password kayban ola la2
 const EyeIcon = ({ handleClick, isPasswordVisible }) => (
@@ -13,6 +15,36 @@ const EyeIcon = ({ handleClick, isPasswordVisible }) => (
 );
 
 function LoginPage() {
+  const dispatch = useDispatch()
+  const location = useNavigate()
+    const isLogin =  useSelector(i => i.auth.isLogin);
+    const response =  useSelector(i => i.auth.response);
+    const status =  useSelector(i => i.auth.status);
+  const [userInfo, setUserInfo] = useState({
+    email: '',
+    password: '',
+  })
+
+  const handleForm = (e) => {
+    setUserInfo({
+      ...userInfo,
+      [e.target.name]: e.target.value
+    })
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    dispatch(fetchLogin(userInfo))
+  }
+  useEffect(()=>{
+    console.log(response)
+  },[response])
+  useEffect(() => {
+    if (isLogin) {
+      location('/');
+    }
+  }, [isLogin]);
+
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -25,15 +57,15 @@ function LoginPage() {
         <div className="md:w-1/2 px-4 md:px-16">
           <h2 className="font-bold text-2xl text-[#002D74]">Login</h2>
           <p className="text-xs mt-4 text-[#002D74]">If you are already a member, easily log in</p>
-
-          <form className="flex flex-col gap-4">
-            <input className="p-2 mt-8 rounded-xl border w-full outline-none" type="email" name="email" placeholder="email" />
+          {response.message && <span className='text-sm text-red-500'>{response.message}</span>}
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+            <input className="p-2 mt-8 rounded-xl border w-full outline-none" type="email" name="email" value={userInfo.email} onChange={handleForm} placeholder="email" />
             <div className="relative">
-              <input className="p-2 rounded-xl border w-full outline-none" type={isPasswordVisible ? "text" : "password"} name="password" placeholder="Password" />
+              <input className="p-2 rounded-xl border w-full outline-none" type={isPasswordVisible ? "text" : "password"} name="password" value={userInfo.password} onChange={handleForm} placeholder="Password" />
               <EyeIcon handleClick={togglePasswordVisibility} isPasswordVisible={isPasswordVisible} />
             </div>
-            <button className="bg-violet-500 rounded-xl text-white py-2 hover:scale-105 duration-300 flex justify-center items-center">
-              Login
+            <button type={status === 'loading' ? 'button' : 'submit'} className="bg-violet-500 rounded-xl text-white py-2 hover:scale-105 duration-300 flex justify-center items-center">
+            {status === 'loading' ? '....' :'Login' }
             </button>
             <button className="bg-[#1877F2] rounded-xl text-white py-2 hover:scale-105 duration-300 flex justify-center items-center">
               <FontAwesomeIcon icon={faFacebook} className="mr-3" />

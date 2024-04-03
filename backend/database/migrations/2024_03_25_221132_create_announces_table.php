@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('announces', function (Blueprint $table) {
             $table->id('announce_id');
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_id')->nullable()->default(1);
             $table->string('title', 255);
             $table->text('address');
             $table->integer('num_rooms');
@@ -24,9 +24,9 @@ return new class extends Migration
             $table->enum('type', ['house', 'apartment', 'villa']);
             $table->string('city', 30);
             $table->text('description');
-            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamps();
 
-            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
